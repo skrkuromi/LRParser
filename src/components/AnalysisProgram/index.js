@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Button } from 'antd';
 
+import AnalysisTable from '../AnalysisTable';
+
 const nonTerminalSymbols = ['S', 'E', 'T', 'F'];
 const initSymbol = "S";
 const terminalSymbols = ['+', '-', '*', '/', '(', ')', 'num'];
@@ -23,7 +25,6 @@ class AnalysisProgram extends Component {
         initSymbol: '',
         profomula: [],
         normativeFamily: [],
-
     }
 
     componentWillMount() {
@@ -35,14 +36,28 @@ class AnalysisProgram extends Component {
         })
     }
 
-    isBeenFomula = (newItem, items) => {
+    isBeenFomula = (followString, newItem, items, tails, tail) => {
+        var first = [];
+        this.getFirst(followString || [], first, tail);
+
         for (let i = 0; i < items.length; i++) {
             if (items[i].join('') === newItem.join('')) {
+                this.addTails(tails[i], first);
                 return true;
             }
         }
 
+        items.push(newItem);
+        tails.push(first);
         return false;
+    }
+
+    addTails = (tails, first) => {
+        for (let i = 0; i < first.length; i++) {
+            if (tails.indexOf(first[i]) !== -1) continue;
+
+            tails.push(first[i]);
+        }
     }
 
     isNonTerminalSymbol = (symbol) => {
@@ -57,16 +72,8 @@ class AnalysisProgram extends Component {
         return false;
     }
 
-    isBeenNewSymbols = (symbol, symbols) => {
-        for (let i = 0; i < symbols.length; i++) {
-            if (symbols[i] === symbol) return true;
-        }
-
-        return false;
-    }
-
     // 由一个非终结符号构造项目集
-    getProjects = (symbol, fomula) => {
+    getProjects = (symbol, fomula, tails, followString, tail) => {
         var { profomula } = this.state;
         profomula = profomula || [];
         var newSymbols = [];
@@ -77,19 +84,14 @@ class AnalysisProgram extends Component {
                 var newItem = [...item];
                 newItem.splice(2, 0, '·');
 
-                // 已经存在的item将不再放入项目集中
-                if (this.isBeenFomula(newItem, fomula)) {
+                // 已经存在的item将不再放入项目集中,否则进行合并
+                if (this.isBeenFomula(followString, newItem, fomula, tails, tail)) {
                     return item;
                 }
 
-                // console.log(newItem)
-
-                fomula.push(newItem);
-
                 // 若'·'后为非终结符，则加入newSymbols数组，递归调用getProjects
-                if (this.isNonTerminalSymbol(newItem[3])
-                    && this.isBeenNewSymbols(newItem[3], newSymbols) === false) {
-                    newSymbols.push(newItem[3]);
+                if (this.isNonTerminalSymbol(newItem[3])) {
+                    newSymbols.push([newItem[3], [...newItem.slice(4)], tail]);
                 }
             }
 
@@ -98,8 +100,8 @@ class AnalysisProgram extends Component {
 
         // console.log(newSymbols)
 
-        newSymbols.map((symbol) => {
-            this.getProjects(symbol, fomula);
+        newSymbols.map((item) => {
+            this.getProjects(item[0], fomula, tails, item[1], item[2]);
             return symbol;
         })
     }
@@ -181,13 +183,15 @@ class AnalysisProgram extends Component {
     generateNormativeFamily = () => {
         let tail = 1;
         let head = 0;
-        const fomula = [];
+        var fomula = [];
+        var tails = [['$']];
 
-        this.getProjects('S', fomula);
+        this.getProjects('S', fomula, tails, [], [...tails[0]]);
 
         var first = {
             status: 0,
             fomula,
+            tails,
             edges: []
         }
         var normativeFamily = [];
@@ -205,34 +209,37 @@ class AnalysisProgram extends Component {
 
             transferSymbols.map((symbol) => {
                 var fomula = [];
+                var tails = [];
 
                 // 项目闭包用于增加的符号，非终结符组成
                 var symbols = [];
 
-                current.fomula.map((item) => {
+                for (let i = 0; i < current.fomula.length; i++) {
+                    const item = current.fomula[i];
+                    const tail = current.tails[i];
                     const index = item.indexOf('·') + 1;
 
-                    if (index === item.length) return item;
+                    if (index === item.length) break;
 
                     if (item[index] === symbol) {
                         fomula.push(this.getNewFomula(item, index));
+                        tails.push([...tail]);
                         this.addSymbols(symbols, item, index);
                     }
-
-                    return item;
-                })
+                }
 
                 symbols.map((symbol) => {
-                    this.getProjects(symbol, fomula);
+                    this.getProjects(symbol, fomula, tails);
                     return symbol;
                 })
 
                 const family = {
                     status: tail,
                     fomula,
+                    tails,
                     edges: []
                 }
-                const status = this.isBeenNormativeFamily(normativeFamily, fomula);
+                const status = this.isBeenNormativeFamily(normativeFamily, fomula, tails);
 
                 if (status === -1) {
                     normativeFamily[tail] = family;
@@ -265,11 +272,59 @@ class AnalysisProgram extends Component {
         this.generateNormativeFamily();
     }
 
+    getFirst = (str, tails, first) => {
+        if (str.length === 0) {
+            tails.map((symbol) => {
+                this.addFirst(first, symbol);
+            })
+
+            return;
+        }
+
+        const symbol = str[0];
+
+        if (this.isNonTerminalSymbol(symbol)) {
+            this.getTerminalFirst(symbol, first, { symbol: true });
+        }
+        else {
+            this.addFirst(first, symbol);
+        }
+    }
+
+    addFirst = (first, symbol) => {
+        for (let i = 0; i < first.length; i++) {
+            if (symbol == first[i]) {
+                return;
+            }
+        }
+        first.push(symbol);
+    }
+
+    getTerminalFirst = (symbol, first, flag) => {
+        const { profomula } = this.state;
+
+        for (let i = 0; i < profomula.length; i++) {
+            if (profomula[i][0] !== symbol) continue;
+
+            if (this.isNonTerminalSymbol(profomula[i][2])) {
+                if (flag[profomula[i][2]]) {
+                    return;
+                }
+
+                flag[profomula[i][2]] = true;
+                this.getTerminalFirst(profomula[i][2], first, flag);
+            } else {
+                this.addFirst(first, profomula[i][2]);
+            }
+        }
+    }
+
     render() {
 
         return (
             <div>
                 <Button type="primary" onClick={this.onClick}>Button</Button>
+                <AnalysisTable {...this.state} />
             </div>
         );
     }
