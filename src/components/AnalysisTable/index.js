@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { } from 'antd';
+import MyTable from './MyTable';
+import AnalysisStack from '../AnalysisStack';
 
 class AnalysisTable extends Component {
-    state = {
-        dataSource: [],
-    }
 
     isNonTerminalSymbol = (symbol) => {
         const { nonTerminalSymbols } = this.props;
@@ -61,14 +59,27 @@ class AnalysisTable extends Component {
             return family;
         })
 
-        console.log(dataSource);
+        return dataSource;
     }
 
     render() {
-        this.createTableData();
+        const dataSource = this.createTableData();
+        console.log(dataSource)
         return (
             <div>
+                <MyTable
+                    dataSource={dataSource}
+                    nonTerminalSymbols={this.props.nonTerminalSymbols}
+                    terminalSymbols={this.props.terminalSymbols}
+                    initSymbol={this.props.initSymbol}
+                ></MyTable>
 
+                <AnalysisStack
+                    analysisTable={dataSource}
+                    nonTerminalSymbols={this.props.nonTerminalSymbols}
+                    terminalSymbols={this.props.terminalSymbols}
+                    profomula={this.props.profomula}
+                ></AnalysisStack>
             </div>
         );
     }
