@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import AnalysisProgram from './components/AnalysisProgram';
+import AnalysisProgram from './pages/AnalysisProgram';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(<AnalysisProgram />, document.getElementById('root'));

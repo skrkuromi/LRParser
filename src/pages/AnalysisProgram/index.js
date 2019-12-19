@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Row, Col, Input, Select } from 'antd';
-import Graph from '../Graph';
-import AnalysisTable from '../AnalysisTable';
+import Graph from '../../components/Graph';
+import AnalysisTable from '../../components/AnalysisTable';
 
 const grammar = [
     {

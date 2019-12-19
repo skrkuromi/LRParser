@@ -58,7 +58,7 @@ class Graph extends Component {
             const { fomula } = graph[index];
             var formatter = v;
             for (let i = 0; i < fomula.length; i++) {
-                formatter += '<p style={{padding:0}}>' + fomula[i].join('') + '</p>';
+                formatter += '<p style={{padding:0}}>' + fomula[i].join(' ') + '</p>';
             }
 
             data.push({
