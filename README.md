@@ -1,9 +1,6 @@
 # LRParser
- 
- # LR语法分析-使用说明
-
 进入界面后首先展示
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/403917/1576723714767-990e63cf-eb4a-4852-a15b-0efda453bf2f.png#align=left&display=inline&height=155&name=image.png&originHeight=295&originWidth=1372&size=15170&status=done&style=none&width=720)
+![image.png](https://github.com/skrkuromi/LRParser/blob/master/images/1.png#align=left&display=inline&height=155&name=image.png&originHeight=295&originWidth=1372&size=15170&status=done&style=none&width=720)
 左边文本框内文字暂不能修改，右侧首先选择文法，共内置了三个文法：
 
 ```javascript
@@ -51,20 +48,21 @@ const grammar = [
   ]
 ```
 选择其中某一个文法后，点击分析此文法的按钮，即可在页面上生成改文法的项目集规范族的流程图，及预测分析表，以第一个文法为例:
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/403917/1576723940961-233775c2-07d6-4824-a3dc-b3a7435d839f.png#align=left&display=inline&height=318&name=image.png&originHeight=773&originWidth=1812&size=102233&status=done&style=none&width=746)
-其中左侧为圆形画法，右侧为树形画法，由于使用的库存在缺陷，自环的线无法表示，只能在节点附近显示出转移符号：
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/403917/1576724146808-3e93cdd4-7fa7-496c-9fd3-caa4f1023a43.png#align=left&display=inline&height=342&name=image.png&originHeight=603&originWidth=613&size=55839&status=done&style=none&width=348)
-将鼠标移动至节点上可显示此节点表示的项目集的项目：
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/403917/1576724267360-00f239cb-192b-40c0-9195-fddd8fd4d5c1.png#align=left&display=inline&height=356&name=image.png&originHeight=712&originWidth=805&size=54801&status=done&style=none&width=402.5)
+![image.png](https://github.com/skrkuromi/LRParser/blob/master/images/2.png#align=left&display=inline&height=318&name=image.png&originHeight=773&originWidth=1812&size=102233&status=done&style=none&width=746)
 
+其中左侧为圆形画法，右侧为树形画法，由于使用的库存在缺陷，自环的线无法表示，只能在节点附近显示出转移符号：
+![image.png](https://github.com/skrkuromi/LRParser/blob/master/images/3.png#align=left&display=inline&height=342&name=image.png&originHeight=603&originWidth=613&size=55839&status=done&style=none&width=348)
+
+将鼠标移动至节点上可显示此节点表示的项目集的项目：
+![image.png](https://github.com/skrkuromi/LRParser/blob/master/images/4.png#align=left&display=inline&height=356&name=image.png&originHeight=712&originWidth=805&size=54801&status=done&style=none&width=402.5)
 
 预测分析表：
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/403917/1576724092178-8fc44223-4767-4c17-8541-b31277073470.png#align=left&display=inline&height=322&name=image.png&originHeight=644&originWidth=1236&size=36452&status=done&style=none&width=618)
+![image.png](https://github.com/skrkuromi/LRParser/blob/master/images/5.png#align=left&display=inline&height=322&name=image.png&originHeight=644&originWidth=1236&size=36452&status=done&style=none&width=618)
 最后，在底部的input框中输入字符串（输入字符串为非终结符组成,且暂不允许有空格）可进行语法检测：
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/403917/1576724332821-9f8234f9-700d-48a3-9eed-5e67aea8b070.png#align=left&display=inline&height=55&name=image.png&originHeight=91&originWidth=1122&size=4025&status=done&style=none&width=682)
+![image.png](https://github.com/skrkuromi/LRParser/blob/master/images/6.png#align=left&display=inline&height=55&name=image.png&originHeight=91&originWidth=1122&size=4025&status=done&style=none&width=682)
 匹配情况：
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/403917/1576724379123-f01e2c5d-a6ea-4086-8616-f0a2e086889d.png#align=left&display=inline&height=335&name=image.png&originHeight=670&originWidth=1211&size=43446&status=done&style=none&width=605.5)
+![image.png](https://github.com/skrkuromi/LRParser/blob/master/images/7.png#align=left&display=inline&height=335&name=image.png&originHeight=670&originWidth=1211&size=43446&status=done&style=none&width=605.5)
 不匹配情况：
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/403917/1576724422630-f26c3872-3494-4477-9803-57a876ab90a0.png#align=left&display=inline&height=250&name=image.png&originHeight=499&originWidth=1203&size=31270&status=done&style=none&width=602)
+![image.png](https://github.com/skrkuromi/LRParser/blob/master/images/8.png#align=left&display=inline&height=250&name=image.png&originHeight=499&originWidth=1203&size=31270&status=done&style=none&width=602)
 无法识别的非终结符（error或不检测）：
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/403917/1576724533588-d3ceecaf-00b3-4fc7-a0d2-46f47e1e524c.png#align=left&display=inline&height=119&name=image.png&originHeight=238&originWidth=1044&size=12682&status=done&style=none&width=522)
+![image.png](https://github.com/skrkuromi/LRParser/blob/master/images/9.png#align=left&display=inline&height=119&name=image.png&originHeight=238&originWidth=1044&size=12682&status=done&style=none&width=522)
