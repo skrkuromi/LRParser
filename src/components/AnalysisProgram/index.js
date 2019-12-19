@@ -1,46 +1,53 @@
 import React, { Component } from 'react';
-import { Button, Row, Col, Input } from 'antd';
+import { Button, Row, Col, Input, Select } from 'antd';
 import Graph from '../Graph';
 import AnalysisTable from '../AnalysisTable';
 
-const nonTerminalSymbols = ['S', 'E', 'T', 'F'];
-const initSymbol = "S";
-const terminalSymbols = ['+', '-', '*', '/', '(', ')', 'num'];
-const profomula = [
-    ['S', '->', 'E'],
-    ['E', '->', 'E', '+', 'T'],
-    ['E', '->', 'E', '-', 'T'],
-    ['E', '->', 'T'],
-    ['T', '->', 'T', '*', 'F'],
-    ['T', '->', 'T', '/', 'F'],
-    ['T', '->', 'F'],
-    ['F', '->', '(', 'E', ')'],
-    ['F', '->', 'num'],
+const grammar = [
+    {
+        nonTerminalSymbols: ["S'", 'S', 'C'],
+        initSymbol: "S'",
+        terminalSymbols: ['c', 'd'],
+        profomula: [
+            ["S'", '->', 'S'],
+            ['S', '->', 'C', 'C'],
+            ['C', '->', 'c', 'C'],
+            ['C', '->', 'd'],
+        ]
+    },
+    {
+        nonTerminalSymbols: ["S'", 'S', 'L', 'R'],
+        initSymbol: "S'",
+        terminalSymbols: ['=', '*', 'id'],
+        profomula: [
+            ["S'", '->', 'S'],
+            ['S', '->', 'L', '=', 'R'],
+            ['S', '->', 'R'],
+            ['L', '->', '*', 'R'],
+            ['L', '->', 'id'],
+            ['R', '->', 'L'],
+        ]
+    },
+    {
+        nonTerminalSymbols: ['S', 'E', 'T', 'F'],
+        initSymbol: "S",
+        terminalSymbols: ['+', '-', '*', '/', '(', ')', 'num'],
+        profomula: [
+            ['S', '->', 'E'],
+            ['E', '->', 'E', '+', 'T'],
+            ['E', '->', 'E', '-', 'T'],
+            ['E', '->', 'T'],
+            ['T', '->', 'T', '*', 'F'],
+            ['T', '->', 'T', '/', 'F'],
+            ['T', '->', 'F'],
+            ['F', '->', '(', 'E', ')'],
+            ['F', '->', 'num'],
+        ]
+    },
 ]
 
 const { TextArea } = Input;
-
-// const nonTerminalSymbols = ["S'", 'S', 'C'];
-// const initSymbol = "S'";
-// const terminalSymbols = ['c', 'd'];
-// const profomula = [
-//     ["S'", '->', 'S'],
-//     ['S', '->', 'C', 'C'],
-//     ['C', '->', 'c', 'C'],
-//     ['C', '->', 'd'],
-// ]
-
-// const nonTerminalSymbols = ["S'", 'S', 'L', 'R'];
-// const initSymbol = "S'";
-// const terminalSymbols = ['=', '*', 'id'];
-// const profomula = [
-//     ["S'", '->', 'S'],
-//     ['S', '->', 'L', '=', 'R'],
-//     ['S', '->', 'R'],
-//     ['L', '->', '*', 'R'],
-//     ['L', '->', 'id'],
-//     ['R', '->', 'L'],
-// ]
+const { Option } = Select;
 
 class AnalysisProgram extends Component {
     state = {
@@ -49,15 +56,54 @@ class AnalysisProgram extends Component {
         initSymbol: '',
         profomula: [],
         normativeFamily: [],
+        value: null,
+        selectValue: 0,
     }
 
-    componentWillMount() {
+    selectGrammar = () => {
+        const currentGrammar = grammar[Number(this.state.selectValue)];
+
+        const { terminalSymbols, nonTerminalSymbols, initSymbol, profomula } = currentGrammar;
+
+        var value = '';
+
+        value += '非终结符：' + nonTerminalSymbols.join(', ') + '\n';
+        value += '初始符号： ' + initSymbol + '\n';
+        value += '终结符：' + terminalSymbols.join(', ') + '\n';
+        value += '文法：';
+
+        profomula.map((fomula) => {
+            value += '\n' + "\t" + fomula.join(' ');
+        })
+
         this.setState({
             terminalSymbols,
             nonTerminalSymbols,
             initSymbol,
-            profomula
+            profomula,
+            value
         })
+    }
+
+    generateSelect = () => {
+        var children = [];
+        for (let i = 0; i < grammar.length; i++) {
+            children.push(<Option value={i}>第{i + 1}个文法</Option>)
+        }
+
+        return children;
+    }
+
+    changeSelect = (value) => {
+        this.setState({
+            selectValue: value
+        }, () => {
+            this.selectGrammar()
+        })
+    }
+
+    componentWillMount() {
+        this.selectGrammar();
     }
 
     isBeenFomula = (fomula, tails, followString, newItem, tail, newTail) => {
@@ -385,19 +431,28 @@ class AnalysisProgram extends Component {
         this.generateNormativeFamily();
     }
 
+    onChange = (e) => {
+        console.log(JSON.stringify(e.target.value));
+    }
+
     render() {
 
         return (
-            <div>
+            <div style={{ paddingTop: 50 }}>
                 <Row>
                     <Col span={2}></Col>
                     <Col span={10}>
-                        <TextArea placeholder="Autosize height based on content lines" autoSize />
+                        <TextArea value={this.state.value} onChange={this.onChange} autoSize />
                     </Col>
-                    <Col span={2}>
-                        <Button type="primary" onClick={this.onClick}>Button</Button>
+                    <Col span={2}></Col>
+                    <Col span={3}>
+                        <Select value={this.state.selectValue} onChange={this.changeSelect}>
+                            {this.generateSelect()}
+                        </Select>
                     </Col>
-                    <Col span={10}></Col>
+                    <Col span={7}>
+                        <Button type="primary" onClick={this.onClick}>分析此文法</Button>
+                    </Col>
                 </Row>
                 <Graph graph={this.state.normativeFamily}></Graph>
                 <AnalysisTable {...this.state} />

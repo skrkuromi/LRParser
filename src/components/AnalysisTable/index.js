@@ -64,7 +64,6 @@ class AnalysisTable extends Component {
 
     render() {
         const dataSource = this.createTableData();
-        console.log(dataSource)
         return (
             <div>
                 <MyTable

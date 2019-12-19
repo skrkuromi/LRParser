@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Input } from 'antd';
+import { Input, Row, Col } from 'antd';
 import ResultTable from './ResultTable';
 
 class AnalysisStack extends Component {
@@ -94,6 +94,8 @@ class AnalysisStack extends Component {
 
                 for (let i = 2; i < fomula.length; i++) {
                     top--;
+                    statusStack.pop();
+                    symbolStack.pop();
                 }
                 statusStack[top + 1] = analysisTable[statusStack[top]][fomula[0]];
                 symbolStack[++top] = fomula[0];
@@ -111,8 +113,23 @@ class AnalysisStack extends Component {
 
         return (
             <div>
-                <Input value={this.state.value} onChange={this.onChange}></Input>
-                <ResultTable></ResultTable>
+                <Row style={{ marginTop: 20 }}>
+                    <Col span={2}></Col>
+                    <Col span={20} style={{ textAlign: 'center' }}>
+                        <Input
+                            placeholder='请输入需要检测的字符串'
+                            value={this.state.value}
+                            onChange={this.onChange}
+                            style={{ maxWidth: 800 }}
+                        ></Input>
+                    </Col>
+                    <Col span={2}></Col>
+                </Row>
+                <Row style={{ marginBottom: 30 }}>
+                    <ResultTable
+                        dataSource={this.state.resultStep}
+                    ></ResultTable>
+                </Row>
             </div>
         );
     }

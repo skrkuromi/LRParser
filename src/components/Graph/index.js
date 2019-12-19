@@ -54,13 +54,22 @@ class Graph extends Component {
         const data = [];
         const eData = [];
         g.nodes().forEach(function (v) {
+            const index = Number(v.slice(1));
+            const { fomula } = graph[index];
+            var formatter = v;
+            for (let i = 0; i < fomula.length; i++) {
+                formatter += '<p style={{padding:0}}>' + fomula[i].join('') + '</p>';
+            }
+
             data.push({
                 name: v,
+                formatter,
             })
             eData.push({
                 name: v,
                 x: g.node(v).y,
                 y: g.node(v).x,
+                formatter
             })
         });
 
@@ -72,6 +81,13 @@ class Graph extends Component {
             tooltip: {},
             animationDurationUpdate: 1500,
             animationEasingUpdate: 'quinticInOut',
+            color: '#40a9ff',
+            focusNodeAdjacency: true,
+            tooltip: {
+                formatter: function (x) {
+                    return x.data.formatter;
+                }
+            },
             series: [
                 {
                     type: 'graph',
@@ -113,6 +129,13 @@ class Graph extends Component {
             tooltip: {},
             animationDurationUpdate: 1500,
             animationEasingUpdate: 'quinticInOut',
+            color: '#40a9ff',
+            focusNodeAdjacency: true,
+            tooltip: {
+                formatter: function (x) {
+                    return x.data.formatter;
+                }
+            },
             series: [
                 {
                     type: 'graph',
@@ -161,7 +184,8 @@ class Graph extends Component {
     render() {
         return (
             <Row>
-                <Col span={11}>
+                <Col span={1}></Col>
+                <Col span={10}>
                     <div id='myGraph' style={{ width: 600, height: 600 }}></div>
                 </Col>
                 <Col span={13}>
