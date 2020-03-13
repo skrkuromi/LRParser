@@ -29,6 +29,7 @@ const grammar = [
             ['R', '->', 'L'],
         ]
     },
+    
     {
         nonTerminalSymbols: ['S', 'E', 'T', 'F'],
         initSymbol: "S",
